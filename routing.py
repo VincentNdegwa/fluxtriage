@@ -26,6 +26,18 @@ def dispatch_result(result: TriageResult, job_id: str) -> None:
         "summary": result.summary,
     }
 
+    if "hooks.slack.com" in url:
+        payload = {
+            "text": (
+                f"FluxTriage {route.upper()}\n"
+                f"Category: {result.category}\n"
+                f"Urgency: {result.urgency}\n"
+                f"Sentiment: {result.sentiment_score}\n"
+                f"Summary: {result.summary}\n"
+                f"Job: {job_id}"
+            )
+        }
+
     with httpx.Client(timeout=10) as client:
         response = client.post(url, json=payload)
         response.raise_for_status()

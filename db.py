@@ -68,6 +68,8 @@ def update_event(
     latency_ms: int | None,
     error: str | None,
 ) -> None:
+    if latency_ms is not None:
+        latency_ms = max(0, min(32767, int(latency_ms)))
     engine = _get_engine()
     table = _event_table()
     now = datetime.now(timezone.utc)

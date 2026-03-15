@@ -2,6 +2,7 @@ import json
 import time
 from typing import Any
 
+from langchain_core.messages import BaseMessage
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_ollama import ChatOllama
 from langchain_openai import ChatOpenAI
@@ -66,12 +67,16 @@ def _build_model(provider: str):
 
 
 def _coerce_result(data: Any) -> TriageResult:
+    print(f"Raw model output: {data}")
+    
     if isinstance(data, TriageResult):
         result = data
     elif isinstance(data, dict):
         result = TriageResult.model_validate(data)
     elif isinstance(data, str):
         result = TriageResult.model_validate(json.loads(data))
+    elif isinstance(data, BaseMessage):
+        result = TriageResult.model_validate(json.loads(data.content))
     else:
         raise ValueError("Unexpected model response type")
 
